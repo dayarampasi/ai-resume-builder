@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Resume Builder - ATS Optimizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Upload Section */
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: #f8fafc;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            background: #f1f5f9;
+            border-color: #5a67d8;
+        }
+        
+        .upload-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: inline-block;
+            margin: 15px 0;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .file-label:hover {
+            background: #5a67d8;
+            transform: scale(1.05);
+        }
+        
+        .file-name {
+            margin: 15px 0;
+            padding: 12px;
+            background: #ebf8ff;
+            border-radius: 8px;
+            border: 1px solid #90cdf4;
+            display: none;
+            font-weight: 500;
+        }
+        
+        /* Form Sections */
+        .form-section {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .form-section h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Buttons */
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #48bb78;
+        }
+        
+        .btn-secondary:hover {
+            background: #38a169;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+        
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .button-group .btn {
+            width: auto;
+            flex: 1;
+        }
+        
+        /* Status Messages */
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .status.success {
+            background: #f0fff4;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+        
+        .status.error {
+            background: #fff5f5;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+        
+        .status.info {
+            background: #ebf8ff;
+            color: #2c5282;
+            border: 1px solid #90cdf4;
+        }
+        
+        /* Results Section */
+        .result {
+            margin-top: 40px;
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .score-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .score-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .score {
+            font-size: 64px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .score-label {
+            color: #718096;
+            font-size: 18px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #667eea;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .feedback-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+        
+        .feedback-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: #fff5f5;
+            border-left: 4px solid #fc8181;
+            border-radius: 5px;
+        }
+        
+        .suggestion-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f0fff4;
+            border-left: 4px solid #9ae6b4;
+            border-radius: 5px;
+        }
+        
+        /* Tabs for Original vs Enhanced */
+        .view-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .view-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            background: #e2e8f0;
+            transition: all 0.3s;
+        }
+        
+        .view-tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .view-content {
+            display: none;
+        }
+        
+        .view-content.active {
+            display: block;
+        }
+        
+        /* Enhancement Box */
+        .enhancement-box {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .enhancement-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .enhancement-section h4 {
+            color: #2c5282;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            text-transform: capitalize;
+        }
+        
+        .enhancement-content {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e2e8f0;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Data Preview */
+        .data-preview {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin-top: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .score-header {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* ===== NEW CHAT WIDGET STYLES (ADDED) ===== */
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 350px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transition: all 0.3s;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .chat-widget.minimized {
+            height: 60px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px 15px 0 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h3 {
+            margin: 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-header h3 i {
+            font-size: 20px;
+        }
+
+        .chat-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message.user {
+            align-items: flex-end;
+        }
+
+        .message.bot {
+            align-items: flex-start;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .user .message-content {
+            background: #667eea;
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot .message-content {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            border-radius: 0 0 15px 15px;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-right: 10px;
+            transition: all 0.3s;
+        }
+
+        .chat-input-area input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .chat-input-area button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .chat-input-area button:hover {
+            background: #5a67d8;
+            transform: scale(1.05);
+        }
+
+        .chat-widget.minimized .chat-messages,
+        .chat-widget.minimized .chat-input-area {
+            display: none;
+        }
+
+        .chat-notification {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f56565;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 5px;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 15px;
+            width: fit-content;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: #999;
+            border-radius: 50%;
+            animation: typing 1s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 AI Resume Builder</h1>
+        <p class="subtitle">Create ATS-optimized resumes with AI-powered enhancements</p>
+        
+        <!-- Tab Buttons -->
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('upload')">📁 Upload Resume</button>
+            <button class="tab-btn" onclick="switchTab('manual')">✍️ Manual Entry</button>
+        </div>
+        
+        <!-- ========== UPLOAD TAB ========== -->
+        <div id="uploadTab" class="tab-content active">
+            <div class="upload-area">
+                <div class="upload-icon">📄</div>
+                <h2>Upload Your Resume</h2>
+                <p>Supported formats: PDF, DOC, DOCX, TXT (Max 20MB)</p>
+                
+                <input type="file" id="fileInput" class="file-input" accept=".pdf,.doc,.docx,.txt">
+                <label for="fileInput" class="file-label">Choose File</label>
+                
+                <div id="fileName" class="file-name"></div>
+                
+                <button id="uploadBtn" class="btn">📤 Upload & Analyze Resume</button>
+                
+                <div id="uploadStatus" class="status"></div>
+            </div>
+        </div>
+        
+        <!-- ========== MANUAL ENTRY TAB ========== -->
+        <div id="manualTab" class="tab-content">
+            <form id="manualForm">
+                <!-- Personal Information -->
+                <div class="form-section">
+                    <h3>📋 Personal Information</h3>
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" id="email" placeholder="john.doe@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="phone" placeholder="+1 (123) 456-7890">
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="location" placeholder="City, State">
+                    </div>
+                </div>
+                
+                <!-- Skills -->
+                <div class="form-section">
+                    <h3>🔧 Skills</h3>
+                    <div class="form-group">
+                        <label>Technical Skills (comma separated) *</label>
+                        <input type="text" id="skills" placeholder="JavaScript, Python, React, Node.js, SQL" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Soft Skills (comma separated)</label>
+                        <input type="text" id="softSkills" placeholder="Leadership, Communication, Problem Solving">
+                    </div>
+                </div>
+                
+                <!-- Education -->
+                <div class="form-section">
+                    <h3>🎓 Education</h3>
+                    <div class="form-group">
+                        <label>Degree *</label>
+                        <input type="text" id="degree" placeholder="Bachelor of Science in Computer Science" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Institution *</label>
+                        <input type="text" id="institution" placeholder="University Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Graduation Year</label>
+                        <input type="text" id="gradYear" placeholder="2020">
+                    </div>
+                    <div class="form-group">
+                        <label>Additional Education</label>
+                        <textarea id="additionalEdu" rows="2" placeholder="Certifications, courses, etc."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Work Experience -->
+                <div class="form-section">
+                    <h3>💼 Work Experience</h3>
+                    <div class="form-group">
+                        <label>Job Title *</label>
+                        <input type="text" id="jobTitle" placeholder="Software Engineer" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Company *</label>
+                        <input type="text" id="company" placeholder="Tech Corp" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Duration</label>
+                        <input type="text" id="duration" placeholder="2019 - Present">
+                    </div>
+                    <div class="form-group">
+                        <label>Description *</label>
+                        <textarea id="jobDesc" rows="4" placeholder="• Developed web applications using React and Node.js
+• Improved performance by 30%
+• Led team of 3 developers" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Additional Experience</label>
+                        <textarea id="additionalExp" rows="3" placeholder="Add more experience entries here..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Projects -->
+                <div class="form-section">
+                    <h3>🚀 Projects</h3>
+                    <div class="form-group">
+                        <label>Project Name</label>
+                        <input type="text" id="projectName" placeholder="E-commerce Platform">
+                    </div>
+                    <div class="form-group">
+                        <label>Technologies Used</label>
+                        <input type="text" id="projectTech" placeholder="React, Node.js, MongoDB">
+                    </div>
+                    <div class="form-group">
+                        <label>Project Description</label>
+                        <textarea id="projectDesc" rows="3" placeholder="Built a full-stack e-commerce platform with payment integration..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- Achievements -->
+                <div class="form-section">
+                    <h3>🏆 Achievements</h3>
+                    <div class="form-group">
+                        <label>Achievements & Awards</label>
+                        <textarea id="achievements" rows="3" placeholder="• Employee of the Month
+• Hackathon Winner
+• Published 3 technical articles"></textarea>
+                    </div>
+                </div>
+                
+                <button type="button" class="btn" onclick="submitManual()">📝 Submit Resume</button>
+            </form>
+        </div>
+        
+        <!-- Loading Indicator -->
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <p style="margin-top: 15px; color: #667eea;">Processing your resume...</p>
+        </div>
+        
+        <!-- ========== RESULTS SECTION ========== -->
+        <div id="result" class="result">
+            <h2>📊 ATS Analysis Results</h2>
+            
+            <!-- Score Card -->
+            <div class="score-card">
+                <div class="score-header">
+                    <div>
+                        <span class="score" id="score">0</span>
+                        <span class="score-label">/100</span>
+                    </div>
+                    <div id="scoreMessage" style="color: #48bb78; font-weight: 600;"></div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                
+                <h3>📌 Feedback:</h3>
+                <div class="feedback-list" id="feedback"></div>
+                
+                <h3>💡 Suggestions for Improvement:</h3>
+                <div class="feedback-list" id="suggestions"></div>
+            </div>
+            
+            <!-- View Tabs (Original vs Enhanced) -->
+            <div class="view-tabs">
+                <button class="view-tab active" onclick="switchView('original')">Original Resume</button>
+                <button class="view-tab" onclick="switchView('enhanced')">✨ AI Enhanced</button>
+            </div>
+            
+            <!-- Original View -->
+            <div id="originalView" class="view-content active">
+                <h3>📄 Extracted Information</h3>
+                <div class="data-preview" id="originalData"></div>
+            </div>
+            
+            <!-- Enhanced View -->
+            <div id="enhancedView" class="view-content">
+                <h3>✨ AI-Powered Enhancements</h3>
+                <div id="enhancementContainer" class="enhancement-box">
+                    <p>Click "Enhance with AI" to generate optimized content.</p>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="button-group">
+                <button id="enhanceBtn" class="btn btn-secondary" onclick="enhanceResume()">✨ Enhance with AI</button>
+                <button id="downloadBtn" class="btn btn-outline" onclick="downloadPDF()">📥 Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== NEW CHAT WIDGET (ADDED) ===== -->
+    <div id="chatWidget" class="chat-widget minimized">
+        <div class="chat-header" onclick="toggleChat()">
+            <h3>
+                <i>💬</i> AI Resume Assistant
+            </h3>
+            <span class="chat-toggle" id="chatToggle">▲</span>
+        </div>
+        <div id="chatNotification" class="chat-notification" style="display: none;">1</div>
+        
+        <div id="chatMessages" class="chat-messages">
+            <div class="message bot">
+                <div class="message-content">
+                    👋 Hi! I'm your AI resume assistant. Ask me anything about improving your resume!
+                </div>
+                <div class="message-time">Just now</div>
+            </div>
+        </div>
+        
+        <div class="chat-input-area">
+            <input type="text" id="chatInput" placeholder="Ask me anything..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // ============ CONFIGURATION ============
+        const SERVER_URL = 'http://localhost:5000';
+        let currentResumeData = null;
+        let currentEnhancements = null;
+        
+        // ============ TAB SWITCHING ============
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tab === 'upload') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('uploadTab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('manualTab').classList.add('active');
+            }
+        }
+        
+        function switchView(view) {
+            document.querySelectorAll('.view-tab').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.view-content').forEach(content => content.classList.remove('active'));
+            
+            if (view === 'original') {
+                document.querySelectorAll('.view-tab')[0].classList.add('active');
+                document.getElementById('originalView').classList.add('active');
+            } else {
+                document.querySelectorAll('.view-tab')[1].classList.add('active');
+                document.getElementById('enhancedView').classList.add('active');
+            }
+        }
+        
+        // ============ FILE UPLOAD HANDLING ============
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const fileNameDiv = document.getElementById('fileName');
+            
+            if (file) {
+                fileNameDiv.style.display = 'block';
+                fileNameDiv.innerHTML = `📄 Selected: <strong>${file.name}</strong> (${(file.size / 1024).toFixed(2)} KB)`;
+            }
+        });
+        
+        document.getElementById('uploadBtn').addEventListener('click', async function() {
+            const file = document.getElementById('fileInput').files[0];
+            const statusDiv = document.getElementById('uploadStatus');
+            const loadingDiv = document.getElementById('loading');
+            const resultDiv = document.getElementById('result');
+            
+            statusDiv.style.display = 'none';
+            resultDiv.style.display = 'none';
+            
+            if (!file) {
+                showStatus('uploadStatus', 'error', '❌ Please select a file');
+                return;
+            }
+            
+            if (file.size > 20 * 1024 * 1024) {
+                showStatus('uploadStatus', 'error', '❌ File too large (max 20MB)');
+                return;
+            }
+            
+            loadingDiv.style.display = 'block';
+            
+            const formData = new FormData();
+            formData.append('resume', file);
+            
+            try {
+                const response = await fetch(`${SERVER_URL}/api/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentResumeData = data;
+                    displayResults(data);
+                    showStatus('uploadStatus', 'success', '✅ Resume uploaded and analyzed successfully!');
+                } else {
+                    showStatus('uploadStatus', 'error', '❌ ' + (data.error || 'Upload failed'));
+                }
+            } catch (error) {
+                showStatus('uploadStatus', 'error', '❌ Error: ' + error.message);
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        });
+        
+        // ============ MANUAL SUBMISSION ============
+        async function submitManual() {
+            const loadingDiv = document.getElementById('loading');
+            const resultDiv = document.getElementById('result');
+            
+            // Get form data
+            const skills = document.getElementById('skills').value.split(',').map(s => s.trim()).filter(s => s);
+            const softSkills = document.getElementById('softSkills').value.split(',').map(s => s.trim()).filter(s => s);
+            const allSkills = [...skills, ...softSkills];
+            
+            const educationDesc = `${document.getElementById('degree').value}, ${document.getElementById('institution').value} (${document.getElementById('gradYear').value})`;
+            
+            const experienceDesc = `${document.getElementById('jobTitle').value} at ${document.getElementById('company').value} (${document.getElementById('duration').value})\n${document.getElementById('jobDesc').value}`;
+            
+            const projectDesc = `${document.getElementById('projectName').value}\nTechnologies: ${document.getElementById('projectTech').value}\n${document.getElementById('projectDesc').value}`;
+            
+            const manualData = {
+                personalInfo: {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    location: document.getElementById('location').value
+                },
+                skills: allSkills.length ? allSkills : ['JavaScript', 'Python', 'React'],
+                education: [{ description: educationDesc || 'Education details provided' }],
+                experience: [{ description: experienceDesc || 'Experience details provided' }],
+                projects: [{ description: projectDesc || 'Project details provided' }],
+                achievements: document.getElementById('achievements').value
+            };
+            
+            loadingDiv.style.display = 'block';
+            resultDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch(`${SERVER_URL}/api/manual-entry`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(manualData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentResumeData = data;
+                    displayResults(data);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        }
+        
+        // ============ AI ENHANCEMENT ============
+        async function enhanceResume() {
+            if (!currentResumeData || !currentResumeData.data) {
+                alert('Please upload or submit a resume first');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            
+            try {
+                const response = await fetch(`${SERVER_URL}/api/enhance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ resumeData: currentResumeData.data })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentEnhancements = data.enhancements;
+                    displayEnhancements(data.enhancements);
+                    
+                    if (data.atsScore) {
+                        updateScore(data.atsScore);
+                    }
+                    
+                    switchView('enhanced');
+                }
+            } catch (error) {
+                alert('Error enhancing resume: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        // ============ PDF DOWNLOAD ============
+        async function downloadPDF() {
+            if (!currentResumeData || !currentResumeData.data) {
+                alert('Please upload or submit a resume first');
+                return;
+            }
+            
+            document.getElementById('loading').style.display = 'block';
+            
+            try {
+                const response = await fetch(`${SERVER_URL}/api/download-pdf`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        resumeData: currentResumeData.data,
+                        enhancements: currentEnhancements 
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Download failed');
+                }
+                
+                // Get the blob from response
+                const blob = await response.blob();
+                
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'enhanced-resume.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                showStatus('uploadStatus', 'success', '✅ PDF downloaded successfully!');
+                
+            } catch (error) {
+                alert('Error downloading PDF: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        // ============ DISPLAY RESULTS ============
+        function displayResults(data) {
+            const resultDiv = document.getElementById('result');
+            
+            if (data.success && data.atsScore) {
+                updateScore(data.atsScore);
+                
+                document.getElementById('originalData').textContent = JSON.stringify(data.data, null, 2);
+                resultDiv.style.display = 'block';
+            }
+        }
+        
+        function updateScore(atsScore) {
+            document.getElementById('score').textContent = atsScore.score;
+            document.getElementById('progressFill').style.width = atsScore.score + '%';
+            
+            const feedbackDiv = document.getElementById('feedback');
+            feedbackDiv.innerHTML = '';
+            
+            if (atsScore.feedback && atsScore.feedback.length > 0) {
+                atsScore.feedback.forEach(item => {
+                    feedbackDiv.innerHTML += `<div class="feedback-item">${item}</div>`;
+                });
+            }
+            
+            const suggestionsDiv = document.getElementById('suggestions');
+            suggestionsDiv.innerHTML = '';
+            
+            if (atsScore.suggestions && atsScore.suggestions.length > 0) {
+                atsScore.suggestions.forEach(item => {
+                    suggestionsDiv.innerHTML += `<div class="suggestion-item">💡 ${item}</div>`;
+                });
+            }
+            
+            const messageEl = document.getElementById('scoreMessage');
+            if (atsScore.score >= 80) {
+                messageEl.textContent = '🌟 Excellent! Well-optimized for ATS';
+                messageEl.style.color = '#48bb78';
+            } else if (atsScore.score >= 60) {
+                messageEl.textContent = '📈 Good, but room for improvement';
+                messageEl.style.color = '#ecc94b';
+            } else {
+                messageEl.textContent = '⚠️ Needs optimization for ATS';
+                messageEl.style.color = '#f56565';
+            }
+        }
+        
+        function displayEnhancements(enhancements) {
+            const container = document.getElementById('enhancementContainer');
+            container.innerHTML = '';
+            
+            if (!enhancements || Object.keys(enhancements).length === 0) {
+                container.innerHTML = '<p>✨ No enhancements generated. Your resume may already be well-optimized!</p>';
+                return;
+            }
+            
+            for (const [section, content] of Object.entries(enhancements)) {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'enhancement-section';
+                sectionDiv.innerHTML = `
+                    <h4>${section.charAt(0).toUpperCase() + section.slice(1)}</h4>
+                    <div class="enhancement-content">${content.replace(/\n/g, '<br>')}</div>
+                `;
+                container.appendChild(sectionDiv);
+            }
+        }
+        
+        // ============ HELPER FUNCTIONS ============
+        function showStatus(elementId, type, message) {
+            const statusDiv = document.getElementById(elementId);
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = message;
+            statusDiv.style.display = 'block';
+        }
+        
+        // Test server connection on load
+        async function testConnection() {
+            try {
+                const response = await fetch(`${SERVER_URL}/api/test`);
+                const data = await response.json();
+                console.log('✅ Server connected:', data.message);
+            } catch (error) {
+                console.error('⚠️ Server connection failed:', error.message);
+                showStatus('uploadStatus', 'error', '⚠️ Cannot connect to server. Make sure it\'s running on port 5000');
+            }
+        }
+
+        // ===== NEW CHAT FUNCTIONS (ADDED) =====
+        let chatMinimized = true;
+        let unreadCount = 0;
+
+        function toggleChat() {
+            const widget = document.getElementById('chatWidget');
+            const toggle = document.getElementById('chatToggle');
+            const notification = document.getElementById('chatNotification');
+            
+            if (chatMinimized) {
+                widget.classList.remove('minimized');
+                toggle.innerHTML = '▼';
+                notification.style.display = 'none';
+                unreadCount = 0;
+            } else {
+                widget.classList.add('minimized');
+                toggle.innerHTML = '▲';
+            }
+            chatMinimized = !chatMinimized;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addMessage(message, 'user');
+            input.value = '';
+            
+            showTypingIndicator();
+            
+            try {
+                const response = await fetch(`${SERVER_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        message: message,
+                        resumeData: currentResumeData 
+                    })
+                });
+                
+                const data = await response.json();
+                
+                hideTypingIndicator();
+                
+                if (data.success) {
+                    addMessage(data.response, 'bot');
+                } else {
+                    addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('Error: ' + error.message, 'bot');
+            }
+        }
+
+        function addMessage(text, sender) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">${text.replace(/\n/g, '<br>')}</div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            
+            if (chatMinimized && sender === 'bot') {
+                unreadCount++;
+                const notification = document.getElementById('chatNotification');
+                notification.style.display = 'flex';
+                notification.textContent = unreadCount;
+            }
+        }
+
+        function showTypingIndicator() {
+            const messagesDiv = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            messagesDiv.appendChild(typingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const typingDiv = document.getElementById('typingIndicator');
+            if (typingDiv) typingDiv.remove();
+        }
+
+        function showChatSuggestions() {
+            setTimeout(() => {
+                addMessage('💡 You can ask me: "How to improve my score?", "Skills suggestions", "Experience tips", "Project help"', 'bot');
+            }, 2000);
+        }
+        
+        // Initialize
+        testConnection();
+        showChatSuggestions();
+    </script>
+</body>
+</html>

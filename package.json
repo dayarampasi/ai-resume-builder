@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "mammoth": "^1.11.0",
+    "pdf-parse-fixed": "^1.1.1"
+  }
+}
